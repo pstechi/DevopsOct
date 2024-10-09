@@ -1,6 +1,18 @@
 ---
 - name: Ping to check connectivity
   hosts: all
+  become: yes
   tasks:
     - name: Ping the target servers
       ping:
+
+    - name: Create test file in /tmp directory
+      file:
+        path: /tmp/ansible_test_file.txt
+        state: touch
+      notify: Print file creation message
+
+  handlers:
+    - name: Print file creation message
+      debug:
+        msg: "File created succesfully on target machine."    
