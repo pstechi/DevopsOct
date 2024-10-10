@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
         DOCKER_IMAGE_NAME = 'poonamsisodia/imagebuild'
         dockerImageTag = "${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}"
     }
@@ -31,8 +30,11 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    bat "echo %DOCKER_HUB_CREDENTIALS_PSW% | docker login -u %DOCKER_HUB_CREDENTIALS_USR% --password-stdin"
-                    bat "docker push ${dockerImageTag}"
+                    // Using withCredentials to securely handle Docker Hub login credentials
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+                        bat "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin"
+                        bat "docker push ${dockerImageTag}"
+                    }
                 }
             }
         }
