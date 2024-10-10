@@ -1,0 +1,105 @@
+A)Create a conatiner with bind mount-
+
+Bound html file in my local with any nginx 
+
+command - 
+docker run -d -p 8081:80 -v "F:/oct devops training/DevopsOct/docker/test.html:/usr/share/nginx/html/index.html" nginx
+
+Test - checked http://localhost:8081/ , html page was up
+
+>docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED              STATUS              PORTS                  NAMES
+1a2772d58b73   nginx     "/docker-entrypoint.…"   About a minute ago   Up About a minute   0.0.0.0:8081->80/tcp   upbeat_bhaskara
+
+B) Docker swarm ahndon acitivity with real time examples
+
+Implement frontend,backend api, database using Docker Swarm, 
+
+E-Commerce Microservices Setup on Docker Swarm
+
+1)Create an Overlay Network: a basic e-commerce architecture.
+
+ command-   docker network create --driver overlay ecommerce-net
+
+2)Deploy the Backend API Service:
+ command - docker service create --name backend --network ecommerce-net httpd
+
+ httpd: This is an Apache HTTP server, simulating the backend API in this example.
+
+3)Deploy the Frontend Service:
+command - docker service create --name frontend --network ecommerce-net --publish 8081:80 nginx
+
+publish 8081:80: Maps port 8081 in my laptop to port 80 inside the container, 
+to access the frontend by navigating to http://localhost:8081 in my browser.
+
+nginx: This simulates the frontend, serving static web content.
+
+4)Deploy the Database Service:
+command - docker service create --name db --network ecommerce-net --env MYSQL_ROOT_PASSWORD=root mysql
+
+5) Scale the Services:
+docker service scale frontend=3
+docker service scale backend=3
+
+6)Test the Setup:
+
+ http://localhost:8081 - nginx was up .
+
+Ensure backend and database services are running and responding.
+installed ping in one the running container
+apt-get update
+apt-get install iputils-ping -y
+
+pinged backend
+
+ping backend
+PING backend (10.0.1.2) 56(84) bytes of data.
+64 bytes from 10.0.1.2: icmp_seq=1 ttl=64 time=1.20 ms
+
+7) Clean up-
+
+docker service rm frontend backend db
+frontend
+backend
+db
+
+C:\Users\sisod>docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                 NAMES
+0bd1c23d083c   httpd:latest   "httpd-foreground"       14 minutes ago   Up 13 minutes   80/tcp                backend.3.ilws16flkvszki12as9wlho48
+5239cf5eb9a6   httpd:latest   "httpd-foreground"       14 minutes ago   Up 13 minutes   80/tcp                backend.2.7ltf6kzn1bm91ta0pu5hffmx1
+49fb8a6c4096   nginx:latest   "/docker-entrypoint.…"   14 minutes ago   Up 14 minutes   80/tcp                frontend.2.ht2wp5eslkz40abkyea3kzik2
+40fad5474dbf   mysql:latest   "docker-entrypoint.s…"   16 minutes ago   Up 16 minutes   3306/tcp, 33060/tcp   db.1.xuap34le5b298tqstws41hng0
+d17a85ad429f   httpd:latest   "httpd-foreground"       19 minutes ago   Up 18 minutes   80/tcp                backend.1.tuhffijb0rg784x3fn9yceo8q
+
+>docker network rm ecommerce-net
+ecommerce-net
+
+C:\Users\sisod>docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+D) Deploying an HTML website using Docker and Docker Compose with a volume and database-
+
+1)Create html file.
+
+2) Create the Dockerfile
+Use the nginx:alpine image to serve the HTML file.
+
+3)Create the docker-compose.yml File
+Define services Nginx and MySQL.
+
+4) Run the command-
+command => docker-compose up --build
+
+5) Test -
+Access the Website
+
+http://localhost:8083 - 
+'Hello, Docker!' is there.
+
+
+
+
+
+
+
+

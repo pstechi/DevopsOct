@@ -1,0 +1,25 @@
+version: '3.8'                # Specifies the Docker Compose file format version.
+services:                      # Defines the services (containers) to be run.
+  web:                         # Defines the "web" service (Nginx server).
+    build: .                   # Builds the Docker image from the current directory.
+    ports:                     
+      - "8083:80"              # Maps port 80 in the container to port 8083 on the host.
+    volumes:                   
+      - ./:/usr/share/nginx/html # Maps local "html" folder to Nginx's default HTML folder.
+    depends_on:                
+      - db                     # Ensures the "db" service starts before the "web" service.
+
+  db:                          # Defines the "db" service (MySQL database).
+    image: mysql:5.7           # Uses the MySQL version 5.7 Docker image.
+    restart: always            # Restarts the container automatically if it stops or fails.
+    environment:               
+      MYSQL_ROOT_PASSWORD: rootpassword  # Sets the MySQL root password.
+      MYSQL_DATABASE: my_database        # Creates a MySQL database named "my_database".
+      MYSQL_USER: user                   # Creates a MySQL user named "user".
+      MYSQL_PASSWORD: password           # Sets the password for the "user".
+    volumes:                  
+      - db_data:/var/lib/mysql   # Maps the MySQL data directory to a persistent Docker volume.
+
+volumes:                       
+  db_data:                     # Declares the "db_data" volume for persistent MySQL storage.
+
