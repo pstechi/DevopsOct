@@ -1,0 +1,12 @@
+# Use an official NGINX image as the base image
+FROM nginx:latest
+
+# Copy the HTML file to the NGINX default directory
+COPY index.html /usr/share/nginx/html/index.html
+
+# Expose port 80 so that the container can accept external requests
+EXPOSE 80
+
+# Start the NGINX server to serve the HTML file
+CMD ["nginx", "-g", "daemon off;"]
+

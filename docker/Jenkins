@@ -1,0 +1,41 @@
+pipeline {
+    agent any  // Use any available Jenkins agent
+
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')  // Docker Hub credentials stored in Jenkins
+        DOCKER_IMAGE_NAME = 'poonamsisodia/imagebuild'  // Docker image name with your Docker Hub username
+    }
+
+    stages {
+        stage('Checkout') {  // Stage to fetch the latest source code
+            steps {
+                git branch: 'main', url: 'https://github.com/pstechi/DevopsOct'  // Clone repository from GitHub
+            }
+        }
+
+        stage('Build Docker Image') {  // Stage to build the Docker image
+            steps {
+                script {
+                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}"  // Tag image with Jenkins build number
+                    sh "docker build -t ${dockerImageTag} ."  // Build Docker image
+                }
+            }
+        }
+
+        stage('Push Docker Image') {  // Stage to push the image to Docker Hub
+            steps {
+                script {
+                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}"  // Use the same build number tag for pushing
+                    sh "echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin"  // Docker Hub login
+                    sh "docker push ${dockerImageTag}"  // Push Docker image to Docker Hub
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh "docker rmi ${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER} || true"  // Clean up local Docker images after pushing
+        }
+    }
+}
