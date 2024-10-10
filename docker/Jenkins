@@ -14,11 +14,17 @@ pipeline {
             }
         }
 
+        stage('Check Workspace') {  // Debugging step to list workspace files
+            steps {
+                bat 'dir'  // Lists files in workspace to confirm structure
+            }
+        }
+
         stage('Build Docker Image') {  // Stage to build the Docker image
             steps {
                 script {
                     // Build Docker image and specify the correct path to the dockerfile
-                    bat "docker build -t ${dockerImageTag} -f ./docker/dockerfile ."  
+                    bat "docker build -t ${dockerImageTag} -f docker/dockerfile ."  
                 }
             }
         }
