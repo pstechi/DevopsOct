@@ -1,40 +1,38 @@
 pipeline {
-    agent any  // Use any available Jenkins agent
+    agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')  // Docker Hub credentials stored in Jenkins
-        DOCKER_IMAGE_NAME = 'poonamsisodia/imagebuild'  // Docker image name with your Docker Hub username
-        dockerImageTag = "${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}"  // Define globally for reuse in post steps
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
+        DOCKER_IMAGE_NAME = 'poonamsisodia/imagebuild'
+        dockerImageTag = "${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}"
     }
 
     stages {
-        stage('Checkout') {  // Stage to fetch the latest source code
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/pstechi/DevopsOct.git'  // Clone repository from GitHub
+                git branch: 'JenkinsPipeline', url: 'https://github.com/pstechi/DevopsOct.git'
             }
         }
 
-        stage('Check Workspace') {  // Debugging step to list workspace files
+        stage('Check Workspace') {
             steps {
-                bat 'dir'  // Lists files in workspace to confirm structure
+                bat 'dir'
             }
         }
 
-        stage('Build Docker Image') {  // Stage to build the Docker image
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Build Docker image and specify the correct path to the dockerfile
-                    bat "docker build -t ${dockerImageTag} -f docker/dockerfile ."  
+                    bat "docker build -t ${dockerImageTag} -f docker/dockerfile ."
                 }
             }
         }
 
-        stage('Push Docker Image') {  // Stage to push the image to Docker Hub
+        stage('Push Docker Image') {
             steps {
                 script {
-                    // Push Docker image to Docker Hub
-                    bat "echo %DOCKER_HUB_CREDENTIALS_PSW% | docker login -u %DOCKER_HUB_CREDENTIALS_USR% --password-stdin"  
-                    bat "docker push ${dockerImageTag}"  // Push the image with the correct tag
+                    bat "echo %DOCKER_HUB_CREDENTIALS_PSW% | docker login -u %DOCKER_HUB_CREDENTIALS_USR% --password-stdin"
+                    bat "docker push ${dockerImageTag}"
                 }
             }
         }
@@ -42,8 +40,7 @@ pipeline {
 
     post {
         always {
-            // Clean up local Docker images after pushing
-            bat "docker rmi ${dockerImageTag} || exit 0"  
+            bat "docker rmi ${dockerImageTag} || exit 0"
         }
     }
 }
