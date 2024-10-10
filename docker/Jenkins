@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {  // Stage to fetch the latest source code
             steps {
-                git branch: 'main', url: 'https://github.com/pstechi/DevopsOct/JenkinsPipeline.git'  // Clone repository from GitHub
+                git branch: 'main', url: 'https://github.com/pstechi/DevopsOct.git'  // Clone repository from GitHub
             }
         }
 
