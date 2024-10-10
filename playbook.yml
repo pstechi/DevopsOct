@@ -1,0 +1,11 @@
+---
+- name: Ping the remote machine and create a temp file
+  hosts: remote_machine
+  tasks:
+    - name: Ping the remote machine
+      ping:
+
+    - name: Create a temporary file on the remote machine
+      file:
+        path: /tmp/my_temp_file.txt
+        state: touch
